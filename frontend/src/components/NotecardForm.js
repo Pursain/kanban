@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Popup from "reactjs-popup";
-import uuid from "uuid";
+import { connect } from "react-redux";
 
 export class NotecardForm extends Component {
   state = {
@@ -18,13 +18,27 @@ export class NotecardForm extends Component {
     });
   }
 
+  componentDidMount() {
+    if (this.props.values) {
+      const { title, desc, estimate } = this.props.values;
+      this.setState({
+        title: title,
+        desc: desc,
+        estimate: estimate
+      });
+    }
+  }
+
   render() {
-    const { addNotecard, categoryId } = this.props;
+    const { formTitle, btnText, func } = this.props;
     return (
-      <Popup trigger={<button className="btn btn-primary">+</button>} modal>
+      <Popup
+        trigger={<button className="btn btn-primary">{btnText}</button>}
+        modal
+      >
         {close => (
           <div className="container p-3">
-            <h3 className="text-center">Add a notecard</h3>
+            <h3 className="text-center">{formTitle}</h3>
             <form>
               <div className="input-group mb-3 mt-3">
                 <div className="input-group-prepend">
@@ -35,7 +49,7 @@ export class NotecardForm extends Component {
                   name="title"
                   className="form-control"
                   aria-label="Title"
-                  value={this.state.title.value}
+                  value={this.state.title}
                   onChange={this.formHandler.bind(this)}
                   required
                 />
@@ -49,7 +63,7 @@ export class NotecardForm extends Component {
                   name="desc"
                   className="form-control"
                   aria-label="Description"
-                  value={this.state.desc.value}
+                  value={this.state.desc}
                   onChange={this.formHandler.bind(this)}
                   required
                 />
@@ -63,7 +77,7 @@ export class NotecardForm extends Component {
                   name="estimate"
                   className="form-control"
                   aria-label="Estimate"
-                  value={this.state.estimate.value}
+                  value={this.state.estimate}
                   onChange={this.formHandler.bind(this)}
                   required
                 />
@@ -75,17 +89,15 @@ export class NotecardForm extends Component {
                 <button
                   className="btn btn-primary btn-block"
                   onClick={() => {
-                    addNotecard({
-                      id: uuid.v4(),
-                      categoryId: categoryId,
-                      title: this.state.title,
-                      desc: this.state.desc,
-                      estimate: this.state.estimate
-                    });
+                    func(
+                      this.state.title,
+                      this.state.desc,
+                      this.state.estimate
+                    );
                     close();
                   }}
                 >
-                  Add
+                  Ok
                 </button>
               </div>
               <div className="col-2">
@@ -106,4 +118,4 @@ export class NotecardForm extends Component {
   }
 }
 
-export default NotecardForm;
+export default connect()(NotecardForm);
